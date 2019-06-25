@@ -61,3 +61,20 @@ body {
   font-weight: 300;
   color: rgb(255, 255, 255);
 }
+
+.divtitulo4 {
+  margin: auto;
+  width: 30%;
+  background-color: rgb(18, 192, 245);
+  border: 3px solid rgb(255, 255, 255);
+  padding: 10px;                              /* Padding es la distancia del contenido al borde*/
+}
+
+
+.ptitulo4 {
+  text-align:center;
+  font-size: 22px;
+  word-spacing: 10px;
+  font-weight: 300;
+  color: rgb(3, 41, 66);
+}

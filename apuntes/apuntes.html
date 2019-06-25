@@ -15,11 +15,53 @@
         </div>
         <br> <br/>
         <div class="divtitulo2">
-                <p class="ptitulo2">INICIAR PROYECTO</p>
+                <p class="ptitulo2">Iniciar proyecto</p>
         </div>
         <div class="divtitulo3">
                 <p class="ptitulo3">django-admin startproject nombre_proyecto</p>
         </div>
+        <br> <br/>
+        <div class="divtitulo2">
+                <p class="ptitulo2">Iniciar servidor</p>
+        </div>
+        <div class="divtitulo4">
+                <p class="ptitulo4">En el mismo directorio que el archivo "manage.py"</p>
+        </div>
+        <div class="divtitulo3">
+                <p class="ptitulo3">python manage.py runserver</p>
+        </div>
+        <br> <br/>
+        <div class="divtitulo2">
+                <p class="ptitulo2">Aplicar migraciones de apps iniciales en BD</p>
+        </div>
+        <div class="divtitulo4">
+                <p class="ptitulo4">En el mismo directorio que el archivo "manage.py"</p>
+        </div>
+        <div class="divtitulo3">
+                <p class="ptitulo3">python manage.py migrate</p>
+        </div>
+        <br> <br/>
+        <div class="divtitulo2">
+                <p class="ptitulo2">Crear app</p>
+        </div>
+        <div class="divtitulo4">
+                <p class="ptitulo4">En el mismo directorio que el archivo "manage.py"</p>
+        </div>
+        <div class="divtitulo3">
+                <p class="ptitulo3">python manage.py startapp nombre_de_la_app</p>
+        </div>
+        <div class="divtitulo3">
+        from django.contrib import admin
+        from django.urls import path
+        from core import views
+
+        urlpatterns = [
+        path('admin/', admin.site.urls),
+        path('', views.home, name="home"),
+        </div>
+]
+
+        
             
         
     
