@@ -1,5 +1,10 @@
 from django.urls import path
-from antreg import views
+from .views import (
+    EspecieListView,
+    EspecieDetailView
+)
 
 urlpatterns = [
-    path('', views.especie, name="especie"),
+    path('especie_list', EspecieListView.as_view(), name="especie_list"),
+    path('<int:pk>/', EspecieDetailView.as_view(), name="especie_detail"),
+]
