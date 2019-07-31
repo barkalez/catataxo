@@ -109,4 +109,3 @@ Wait for the repository duel to review, accept and mix in the corresponding bran
 ###Frontend
 * RulezCore
 * Javier
-
