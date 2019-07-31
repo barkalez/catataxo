@@ -1,101 +1,112 @@
-# :snake: Catataxo :snake: 
+ #Catataxo 
 
-Catataxo aims to be a web tool whose main purpose will be the cataloging of all living beings, these will be organized based on a structured tree starting from the system of the three domains: Bacteria, Archaea and Eukarya. It will offer all users who obtain a special permission to create all the branches and leaves of this tree. So you can create a site where you can consult everything related to each species that is registered.
+![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLsCEtWLV5xKEcWWKGHIWneLz9-B86FKUM2RiDoAMO41F93-g5)
 
-## Comenzando 🚀
+ ##Description proyect :tw-1f4dd:
+ Catataxo aims to be a web tool whose main purpose will be the cataloging of all living beings, these will be organized based on a structured tree starting from the system of the three domains: Bacteria, Archaea and Eukarya. It will offer all users who obtain a special permission to create all the branches and leaves of this tree. So you can create a site where you can consult everything related to each species that is registered.
 
-_Estas instrucciones te permitirán obtener una copia del proyecto en funcionamiento en tu máquina local para propósitos de desarrollo y pruebas._
+##How to help :tw-1f4aa:
 
-Mira **Deployment** para conocer como desplegar el proyecto.
+You must send an e-mail to barkala19@gmail.com exposing your skills related to the technologies described below.
+In a short time you will get an answer and you will be assigned a task.
+
+####BackEnd:
+
+* Python
+* Django
+* Data Base
+
+####FrontEnd:
+
+* HTML
+* CSS
+* JavaScript
+* BootStrap
+
+###Process:
+
+* Repository fork
+* Clone the repository
+* Update the master branch
+* Create a branch
+* Make changes
+* Make a Pull Request
+
+####Repository fork
+   The first step is to "fork" the repository.
+
+####Clone the repository
+After having the repository in our account, select the repository address "SSH or HTTP" and clone:
+
+     $ git clone https://github.com/User/NameRepo.git
+
+Within the folder it generates, check the repository URL:
+
+     $ git remote -v
+
+Before making modifications add the URL of the original repository of the project:
+
+    $ git remote add upstream https://github.com/User/RepoOriginal(Forkeado)
+
+Check
+
+     $ git remote -v
 
 
-### Pre-requisitos 📋
+####Update the Master branch
+Before starting work, get the latest changes from the Original Repo:
 
-_Que cosas necesitas para instalar el software y como instalarlas_
+     $ git pull -r upstream master
 
-```
-Da un ejemplo
-```
 
-### Instalación 🔧
+####Create a Branch
+To create a branch use the "checkout" option of git:
 
-_Una serie de ejemplos paso a paso que te dice lo que debes ejecutar para tener un entorno de desarrollo ejecutandose_
+     $ git checkout -b feature-branch-name
 
-_Dí cómo será ese paso_
+####Make changes
+Make all the changes you want to make to the project.
 
-```
-Da un ejemplo
-```
+Add the files and commit
 
-_Y repite_
+After committing, push to our repository indicating the branch we have created.
 
-```
-hasta finalizar
-```
+     $ git push origin feature-branch-name
 
-_Finaliza con un ejemplo de cómo obtener datos del sistema o como usarlos para una pequeña demo_
+####Make a Pull Request
+Click on "Compare & Pull Request"
 
-## Ejecutando las pruebas ⚙️
+Write changes to the Pull Request.
 
-_Explica como ejecutar las pruebas automatizadas para este sistema_
+If all is well, send with the "Send Pull Request" button.
 
-### Analice las pruebas end-to-end 🔩
+Wait for the repository duel to review, accept and mix in the corresponding branch.
 
-_Explica que verifican estas pruebas y por qué_
+##Helpers
 
-```
-Da un ejemplo
-```
+[![Helpers](https://st2.depositphotos.com/1001599/6877/v/450/depositphotos_68773769-stock-illustration-good-business-idea.jpg "Helpers")](http://https://st2.depositphotos.com/1001599/6877/v/450/depositphotos_68773769-stock-illustration-good-business-idea.jpg "Helpers")
 
-### Y las pruebas de estilo de codificación ⌨️
+###Backend
+* Hektor
+* Barkalez
 
-_Explica que verifican estas pruebas y por qué_
+###Frontend
+* RulezCore
+* Javier
 
-```
-Da un ejemplo
-```
+##Objectives
 
-## Deployment 📦
+[![Objetives](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdNrN7SUfexg1bLgomOc5djUYkY4pqevNPVcxEzPZYqpTkp96s "Objetives")](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdNrN7SUfexg1bLgomOc5djUYkY4pqevNPVcxEzPZYqpTkp96s "Objetives")
 
-_Agrega notas adicionales sobre como hacer deploy_
+###General objectives
 
-## Construido con 🛠️
+###Backend
+#####To Define MVT
+* To define Models.py
+* To define how to implement AnyTree (Librarie Python)
+* Barkalez
 
-_Menciona las herramientas que utilizaste para crear tu proyecto_
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - El framework web usado
-* [Maven](https://maven.apache.org/) - Manejador de dependencias
-* [ROME](https://rometools.github.io/rome/) - Usado para generar RSS
-
-## Contribuyendo 🖇️
-
-Por favor lee el [CONTRIBUTING.md](https://gist.github.com/villanuevand/xxxxxx) para detalles de nuestro código de conducta, y el proceso para enviarnos pull requests.
-
-## Wiki 📖
-
-Puedes encontrar mucho más de cómo utilizar este proyecto en nuestra [Wiki](https://github.com/tu/proyecto/wiki)
-
-## Versionado 📌
-
-Usamos [SemVer](http://semver.org/) para el versionado. Para todas las versiones disponibles, mira los [tags en este repositorio](https://github.com/tu/proyecto/tags).
-
-## Autores ✒️
-
-_Menciona a todos aquellos que ayudaron a levantar el proyecto desde sus inicios_
-
-* **Andrés Villanueva** - *Trabajo Inicial* - [villanuevand](https://github.com/villanuevand)
-* **Fulanito Detal** - *Documentación* - [fulanitodetal](#fulanito-de-tal)
-
-También puedes mirar la lista de todos los [contribuyentes](https://github.com/your/project/contributors) quíenes han participado en este proyecto. 
-
-## Licencia 📄
-
-Este proyecto está bajo la Licencia (Tu Licencia) - mira el archivo [LICENSE.md](LICENSE.md) para detalles
-
-## Expresiones de Gratitud 🎁
-
-* Comenta a otros sobre este proyecto 📢
-* Invita una cerveza 🍺 a alguien del equipo. 
-* Da las gracias públicamente 🤓.
-* etc.
+###Frontend
+* RulezCore
+* Javier
 
