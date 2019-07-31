@@ -2,7 +2,7 @@
 
 ![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLsCEtWLV5xKEcWWKGHIWneLz9-B86FKUM2RiDoAMO41F93-g5)
 
- ## Description proyect:tw-1f4dd:
+ ## Description proyect          :tw-1f4dd:
  Catataxo aims to be a web tool whose main purpose will be the cataloging of all living beings, these will be organized based on a structured tree starting from the system of the three domains: Bacteria, Archaea and Eukarya. It will offer all users who obtain a special permission to create all the branches and leaves of this tree. So you can create a site where you can consult everything related to each species that is registered.
 
 ## How to help :tw-1f4aa:
@@ -107,6 +107,5 @@ Wait for the repository duel to review, accept and mix in the corresponding bran
 * Barkalez
 
 ### Frontend
-* RulezCore
-* Javier
+
 
