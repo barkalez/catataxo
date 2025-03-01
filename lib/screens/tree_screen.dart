@@ -23,12 +23,19 @@ class TreeScreenState extends State<TreeScreen> {
     ),
   );
   bool _isLoading = true;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _logger.i('Iniciando carga de datos en TreeScreen');
     _loadTreeData();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadTreeData() async {
@@ -50,13 +57,13 @@ class TreeScreenState extends State<TreeScreen> {
         final id = doc.id;
         _logger.d('Procesando documento con ID: $id, datos: $data');
         if (data.isNotEmpty && data.containsKey('nombre_cientifico')) {
-          final tipo = data['tipo'] ?? 'folder'; // Simula tipo si no existe, o usa 'nivel_taxonomico'
+          final tipo = data['tipo'] ?? 'folder';
           final node = TreeNode<Map<String, dynamic>>(data: {
             'id': id,
             'nombre_cientifico': data['nombre_cientifico'] ?? 'Sin nombre',
             'nivel_taxonomico': data['nivel_taxonomico'] ?? 'folder',
             'padre_id': data['padre_id'],
-            'tipo': tipo, // 'folder' o 'file'
+            'tipo': tipo,
             'createdAt': data['createdAt'] != null
                 ? (data['createdAt'] as Timestamp).toDate()
                 : DateTime.now(),
@@ -112,28 +119,31 @@ class TreeScreenState extends State<TreeScreen> {
                   padding: const EdgeInsets.all(16.0),
                   expansionBehavior: ExpansionBehavior.snapToTop,
                   indentation: const Indentation(
-                    style: IndentStyle.squareJoint, // Líneas cuadradas
-                    width: 20.0, // Ancho de indentación
-                    color: Colors.grey, // Color de las líneas
+                    style: IndentStyle.squareJoint,
+                    width: 16.0,
+                    color: Colors.grey,
                   ),
-                  builder: (context, node) => ListTile(
-                    leading: _getIcon(node),
-                    title: Text(
-                      node.data!['nombre_cientifico'] as String,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                  builder: (context, node) {
+                    _logger.d('Renderizando nodo: ${node.data!['nombre_cientifico']}, hijos: ${node.children.length}');
+                    return ListTile(
+                      leading: _getIcon(node),
+                      title: Text(
+                        node.data!['nombre_cientifico'] as String,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
-                    ),
-                    subtitle: Text(
-                      'Nivel: ${node.data!['nivel_taxonomico']}',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                    ),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-                    onTap: () {
-                      _logger.i('Nodo seleccionado: ${node.data!['nombre_cientifico']}');
-                    },
-                  ),
+                      subtitle: Text(
+                        'Nivel: ${node.data!['nivel_taxonomico']}',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      ),
+                      trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                      onTap: () {
+                        _logger.i('Nodo seleccionado: ${node.data!['nombre_cientifico']}');
+                      },
+                    );
+                  },
                 ),
     );
   }
@@ -150,13 +160,16 @@ class TreeScreenState extends State<TreeScreen> {
 
   TreeNode<Map<String, dynamic>> _findRootNode() {
     try {
-      return _nodeMap.values.firstWhere(
+      _logger.d('Buscando nodo raíz en _nodeMap con ${_nodeMap.length} nodos');
+      final root = _nodeMap.values.firstWhere(
         (node) => node.data!['padre_id'] == null,
         orElse: () {
           _logger.w('No se encontró un nodo raíz explícito, usando el primero disponible');
           return _nodeMap.values.first;
         },
       );
+      _logger.d('Nodo raíz encontrado: ${root.data!['nombre_cientifico']}, datos: ${root.data}');
+      return root;
     } catch (e) {
       _logger.e('Error al encontrar nodo raíz: $e');
       return _nodeMap.values.first;
