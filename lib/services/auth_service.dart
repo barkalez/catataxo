@@ -9,6 +9,7 @@ class AuthService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  // Registrar/Iniciar sesión con Google
   Future<User?> signInWithGoogle() async {
     try {
       _logger.i('Iniciando flujo de Google Sign-In');
@@ -32,31 +33,59 @@ class AuthService {
       if (user != null) {
         final userDoc = await _firestore.collection('users').doc(user.uid).get();
         if (!userDoc.exists) {
+          // Crear documento en 'users' con el uid como ID si no existe
           await _firestore.collection('users').doc(user.uid).set({
             'email': user.email,
-            'alias': user.displayName ?? user.email!.split('@')[0],
+            'alias': user.displayName ?? user.email!.split('@')[0], // Usa displayName o deriva del email
             'createdAt': FieldValue.serverTimestamp(),
+            'role': 'reader', // Por defecto reader, cambia manualmente a admin en Firestore
           });
-          _logger.i('Usuario registrado con Google: ${user.email}');
+          _logger.i('Usuario registrado con Google: ${user.email}, alias: ${user.displayName ?? user.email!.split('@')[0]}');
         } else {
-          _logger.i('Usuario existente inició sesión: ${user.email}');
+          _logger.i('Usuario existente inició sesión con Google: ${user.email}');
         }
       }
 
       return user;
     } catch (e) {
-      _logger.e('Error detallado al iniciar sesión con Google: $e');
-      rethrow; // Relanza la excepción para manejarla en la UI
+      _logger.e('Error al iniciar sesión con Google: $e');
+      return null;
     }
   }
 
+  // Cerrar sesión
   Future<void> signOut() async {
     await _googleSignIn.signOut();
     await _auth.signOut();
     _logger.i('Sesión cerrada');
   }
 
+  // Obtener usuario actual
   User? getCurrentUser() {
     return _auth.currentUser;
+  }
+
+  // Obtener el rol del usuario actual
+  Future<String?> getUserRole() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      _logger.w('No hay usuario autenticado');
+      return null;
+    }
+
+    try {
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      if (userDoc.exists) {
+        final role = userDoc.data()?['role'] as String?;
+        _logger.i('Rol del usuario ${user.email}: $role');
+        return role;
+      } else {
+        _logger.w('No se encontró documento de usuario para ${user.uid}');
+        return null;
+      }
+    } catch (e) {
+      _logger.e('Error al obtener el rol del usuario: $e');
+      return null;
+    }
   }
 }

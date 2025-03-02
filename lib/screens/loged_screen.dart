@@ -4,13 +4,32 @@ import 'new_tax_screen.dart'; // Asegúrate de que este sea el archivo correcto 
 import 'tree_screen.dart';
 import '../services/auth_service.dart';
 
-class LogedScreen extends StatelessWidget {
+class LogedScreen extends StatefulWidget {
   const LogedScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final AuthService authService = AuthService(); // Instancia para manejar el logout
+  State<LogedScreen> createState() => _LogedScreenState();
+}
 
+class _LogedScreenState extends State<LogedScreen> {
+  final AuthService _authService = AuthService();
+  String? _userRole;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserRole();
+  }
+
+  Future<void> _loadUserRole() async {
+    final role = await _authService.getUserRole();
+    setState(() {
+      _userRole = role;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -20,53 +39,50 @@ class LogedScreen extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.teal, // Fondo teal como en TaxonForm
-        elevation: 4, // Sombra como en TaxonForm
-        centerTitle: true, // Centrado para consistencia
+        backgroundColor: Colors.teal,
+        elevation: 4,
+        centerTitle: true,
       ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.teal.shade50, Colors.white], // Gradiente igual a TaxonForm
+            colors: [Colors.teal.shade50, Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(16.0), // Padding igual a TaxonForm
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const TaxonForm()), // Asegúrate de que TaxonForm esté importado como new_tax_screen.dart
-                    );
-                  },
+                  onPressed: _userRole == 'admin'
+                      ? () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const TaxonForm()),
+                          );
+                        }
+                      : null, // Deshabilitado para 'reader'
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal, // Fondo teal como en TaxonForm
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 15,
-                    ), // Padding consistente
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12), // Bordes redondeados
-                    ),
-                    elevation: 5, // Elevación como en TaxonForm
-                    shadowColor: Colors.teal.withAlpha(128), // Sombra teal
+                    backgroundColor: Colors.teal,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 5,
+                    shadowColor: Colors.teal.withAlpha(128),
                   ),
                   child: const Text(
                     'Crear taxón',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white, // Texto blanco como en TaxonForm
+                      color: Colors.white,
                     ),
                   ),
                 ),
-                const SizedBox(height: 24), // Espaciado similar a TaxonForm
+                const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
@@ -76,13 +92,8 @@ class LogedScreen extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 15,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     elevation: 5,
                     shadowColor: Colors.teal.withAlpha(128),
                   ),
@@ -98,7 +109,7 @@ class LogedScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () async {
-                    await authService.signOut(); // Llama al método signOut
+                    await _authService.signOut();
                     if (context.mounted) {
                       Navigator.pushReplacement(
                         context,
@@ -108,13 +119,8 @@ class LogedScreen extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 15,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     elevation: 5,
                     shadowColor: Colors.teal.withAlpha(128),
                   ),

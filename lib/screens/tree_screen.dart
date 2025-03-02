@@ -69,6 +69,7 @@ class TreeScreenState extends State<TreeScreen> {
                 ? (data['createdAt'] as Timestamp).toDate()
                 : DateTime.now(),
             'descripcion': data['descripcion'] ?? 'No disponible',
+            'creado_por': data['creado_por'], // Incluir el campo 'creado_por'
           });
           _nodeMap[id] = node;
           _logger.d('Nodo creado con datos: ${node.data}');
@@ -120,7 +121,7 @@ class TreeScreenState extends State<TreeScreen> {
               : SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 1.5, // Ancho mayor al de la pantalla
+                    width: MediaQuery.of(context).size.width * 1.5,
                     child: TreeView.simple(
                       tree: _findRootNode(),
                       padding: const EdgeInsets.all(16.0),
@@ -143,7 +144,7 @@ class TreeScreenState extends State<TreeScreen> {
                                   color: Colors.black87,
                                 ),
                               ),
-                              const SizedBox(width: 8), // Espacio entre texto y botón
+                              const SizedBox(width: 8),
                               IconButton(
                                 icon: const Icon(
                                   Icons.visibility,
@@ -187,7 +188,7 @@ class TreeScreenState extends State<TreeScreen> {
     final tipoNodo = node.data!['tipo_nodo'] as String;
     if (tipoNodo == 'taxon') {
       return const Icon(Icons.folder, color: Colors.teal);
-    } else if (tipoNodo == 'species') {
+    } else if (tipoNodo == 'species') { // Cambiado 'especie' a 'species' para coincidir con TaxonForm
       return const Icon(Icons.local_florist, color: Colors.teal);
     }
     return const Icon(Icons.help_outline, color: Colors.grey);

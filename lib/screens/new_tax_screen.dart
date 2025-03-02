@@ -3,6 +3,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'loged_screen.dart';
+import '../services/auth_service.dart';
 
 class TaxonForm extends StatefulWidget {
   const TaxonForm({super.key});
@@ -14,9 +15,58 @@ class TaxonForm extends StatefulWidget {
 class TaxonFormState extends State<TaxonForm> {
   final _formKey = GlobalKey<FormBuilderState>();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final AuthService _authService = AuthService();
+  String? _userRole;
+  String? _userAlias; // Para almacenar el alias del usuario
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final role = await _authService.getUserRole();
+    final user = _authService.getCurrentUser();
+    if (user != null) {
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      setState(() {
+        _userRole = role;
+        _userAlias = userDoc.data()?['alias'] as String?;
+        _isLoading = false;
+      });
+    }
+    if (role != 'admin' && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Solo los administradores pueden crear taxones'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      Navigator.pop(context); // Redirige fuera de TaxonForm
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_userRole != 'admin') {
+      return const Scaffold(
+        body: Center(
+          child: Text(
+            'Acceso denegado: Solo administradores pueden crear taxones',
+            style: TextStyle(fontSize: 18, color: Colors.red),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -69,9 +119,9 @@ class TaxonFormState extends State<TaxonForm> {
                 ),
                 const SizedBox(height: 16),
                 FormBuilderDropdown<String>(
-                  name: 'tipo_nodo',
+                  name: 'tipo',
                   decoration: InputDecoration(
-                    labelText: 'Tipo de nodo',
+                    labelText: 'Tipo',
                     prefixIcon: const Icon(Icons.type_specimen, color: Colors.teal),
                     filled: true,
                     fillColor: Colors.white,
@@ -89,7 +139,7 @@ class TaxonFormState extends State<TaxonForm> {
                     ),
                     contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                   ),
-                  initialValue: 'taxon', // Valor por defecto
+                  initialValue: 'taxon',
                   items: [
                     DropdownMenuItem(value: 'taxon', child: Text('Taxón')),
                     DropdownMenuItem(value: 'especie', child: Text('Especie')),
@@ -234,8 +284,9 @@ class TaxonFormState extends State<TaxonForm> {
         'nivel_taxonomico': formData['nivel_taxonomico'],
         'nombre_cientifico': formData['nombre_cientifico'],
         'padre_id': formData['parentId'],
-        'tipo_nodo': formData['tipo_nodo'], // Guardar el valor seleccionado del dropdown
+        'tipo': formData['tipo'],
         'createdAt': FieldValue.serverTimestamp(),
+        'creado_por': _userAlias ?? 'Desconocido', // Guardar el alias del creador
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

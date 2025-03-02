@@ -26,6 +26,8 @@ class _ViewTaxScreenState extends State<ViewTaxScreen> {
   void initState() {
     super.initState();
     _logger.d('Datos del taxón en ViewTaxScreen: ${widget.taxonData}');
+    // Log adicional para verificar específicamente el campo 'creado_por'
+    _logger.i('Valor de creado_por: ${widget.taxonData['creado_por']}');
   }
 
   @override
@@ -37,9 +39,9 @@ class _ViewTaxScreenState extends State<ViewTaxScreen> {
     }
 
     // Traducir 'tipo_nodo' a español
-    String tipoNododisplay = 'No disponible';
+    String tipoNodoDisplay = 'No disponible';
     if (widget.taxonData['tipo_nodo'] != null) {
-      tipoNododisplay = widget.taxonData['tipo_nodo'] == 'taxon' ? 'Taxón' : 'Especie';
+      tipoNodoDisplay = widget.taxonData['tipo_nodo'] == 'taxon' ? 'Taxón' : 'Especie';
     }
 
     return Scaffold(
@@ -60,7 +62,7 @@ class _ViewTaxScreenState extends State<ViewTaxScreen> {
               if (widget.taxonData['nombre_cientifico'] != null)
                 _buildField('Nombre Científico', widget.taxonData['nombre_cientifico'].toString()),
               _buildField('Nivel Taxonómico', widget.taxonData['nivel_taxonomico']),
-              _buildField('Tipo nodo', tipoNododisplay), // Mostrar "Taxón" o "Especie"
+              _buildField('Tipo nodo', tipoNodoDisplay),
               _buildField('ID Padre', widget.taxonData['padre_id']),
               _buildField('Fecha de Creación', formattedCreatedAt),
               if (widget.taxonData['descripcion'] != null)
@@ -69,6 +71,8 @@ class _ViewTaxScreenState extends State<ViewTaxScreen> {
                 _buildField('Ubicación GPS', widget.taxonData['localizacion_gps'].toString()),
               if (widget.taxonData['descrito_por'] != null)
                 _buildField('Descrito Por', widget.taxonData['descrito_por']),
+              if (widget.taxonData['creado_por'] != null)
+                _buildField('Creado Por', widget.taxonData['creado_por']), // Mostrar el alias del creador
             ],
           ),
         ),
