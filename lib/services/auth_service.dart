@@ -1,19 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firebase_config.dart';
+import '../utils/logger.dart';
+import '../constants/firestore_constants.dart';
 
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final Logger _logger = Logger();
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final Logger _logger = AppLogger.instance;
 
-  // Registrar/Iniciar sesión con Google
   Future<User?> signInWithGoogle() async {
     try {
       _logger.i('Iniciando flujo de Google Sign-In');
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await FirebaseConfig.googleSignIn.signIn();
       if (googleUser == null) {
         _logger.w('Inicio de sesión con Google cancelado por el usuario');
         return null;
@@ -27,18 +26,17 @@ class AuthService {
       );
 
       _logger.i('Iniciando sesión en Firebase con credenciales de Google');
-      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      UserCredential userCredential = await FirebaseConfig.auth.signInWithCredential(credential);
       User? user = userCredential.user;
 
       if (user != null) {
-        final userDoc = await _firestore.collection('users').doc(user.uid).get();
+        final userDoc = await FirebaseConfig.firestore.collection(FirestoreConstants.usersCollection).doc(user.uid).get();
         if (!userDoc.exists) {
-          // Crear documento en 'users' con el uid como ID si no existe
-          await _firestore.collection('users').doc(user.uid).set({
-            'email': user.email,
-            'alias': user.displayName ?? user.email!.split('@')[0], // Usa displayName o deriva del email
-            'createdAt': FieldValue.serverTimestamp(),
-            'role': 'reader', // Por defecto reader, cambia manualmente a admin en Firestore
+          await FirebaseConfig.firestore.collection(FirestoreConstants.usersCollection).doc(user.uid).set({
+            FirestoreConstants.emailField: user.email,
+            FirestoreConstants.aliasField: user.displayName ?? user.email!.split('@')[0],
+            FirestoreConstants.createdAtField: FieldValue.serverTimestamp(),
+            FirestoreConstants.roleField: FirestoreConstants.defaultRole,
           });
           _logger.i('Usuario registrado con Google: ${user.email}, alias: ${user.displayName ?? user.email!.split('@')[0]}');
         } else {
@@ -53,30 +51,27 @@ class AuthService {
     }
   }
 
-  // Cerrar sesión
   Future<void> signOut() async {
-    await _googleSignIn.signOut();
-    await _auth.signOut();
+    await FirebaseConfig.googleSignIn.signOut();
+    await FirebaseConfig.auth.signOut();
     _logger.i('Sesión cerrada');
   }
 
-  // Obtener usuario actual
   User? getCurrentUser() {
-    return _auth.currentUser;
+    return FirebaseConfig.auth.currentUser;
   }
 
-  // Obtener el rol del usuario actual
   Future<String?> getUserRole() async {
-    final user = _auth.currentUser;
+    final user = FirebaseConfig.auth.currentUser;
     if (user == null) {
       _logger.w('No hay usuario autenticado');
       return null;
     }
 
     try {
-      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      final userDoc = await FirebaseConfig.firestore.collection(FirestoreConstants.usersCollection).doc(user.uid).get();
       if (userDoc.exists) {
-        final role = userDoc.data()?['role'] as String?;
+        final role = userDoc.data()?[FirestoreConstants.roleField] as String?;
         _logger.i('Rol del usuario ${user.email}: $role');
         return role;
       } else {
