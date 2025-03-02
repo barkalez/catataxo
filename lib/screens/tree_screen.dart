@@ -117,63 +117,68 @@ class TreeScreenState extends State<TreeScreen> {
                     style: TextStyle(fontSize: 18, color: Colors.grey),
                   ),
                 )
-              : TreeView.simple(
-                  tree: _findRootNode(),
-                  padding: const EdgeInsets.all(16.0),
-                  expansionBehavior: ExpansionBehavior.snapToTop,
-                  indentation: const Indentation(
-                    style: IndentStyle.squareJoint,
-                    width: 16.0,
-                    color: Colors.grey,
-                  ),
-                  builder: (context, node) {
-                    _logger.d('Renderizando nodo: ${node.data!['nombre_cientifico']}, hijos: ${node.children.length}');
-                    return ListTile(
-                      leading: _getIcon(node),
-                      title: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              node.data!['nombre_cientifico'] as String,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.visibility,
-                              size: 20,
-                              color: Colors.teal,
-                            ),
-                            onPressed: () {
-                              _logger.i('Nodo seleccionado: ${node.data!['nombre_cientifico']}');
-                              final taxonData = node.data ?? {};
-                              _logger.d('Datos del taxón seleccionado antes de navegar: $taxonData');
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ViewTaxScreen(taxonData: taxonData),
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 1.5, // Ancho mayor al de la pantalla
+                    child: TreeView.simple(
+                      tree: _findRootNode(),
+                      padding: const EdgeInsets.all(16.0),
+                      expansionBehavior: ExpansionBehavior.snapToTop,
+                      indentation: const Indentation(
+                        style: IndentStyle.squareJoint,
+                        width: 16.0,
+                        color: Colors.grey,
+                      ),
+                      builder: (context, node) {
+                        _logger.d('Renderizando nodo: ${node.data!['nombre_cientifico']}, hijos: ${node.children.length}');
+                        return ListTile(
+                          leading: _getIcon(node),
+                          title: Row(
+                            children: [
+                              Text(
+                                node.data!['nombre_cientifico'] as String,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
                                 ),
-                              );
-                            },
+                              ),
+                              const SizedBox(width: 8), // Espacio entre texto y botón
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.visibility,
+                                  size: 20,
+                                  color: Colors.teal,
+                                ),
+                                onPressed: () {
+                                  _logger.i('Nodo seleccionado: ${node.data!['nombre_cientifico']}');
+                                  final taxonData = node.data ?? {};
+                                  _logger.d('Datos del taxón seleccionado antes de navegar: $taxonData');
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ViewTaxScreen(taxonData: taxonData),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      subtitle: Text(
-                        'Nivel: ${node.data!['nivel_taxonomico']}',
-                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                      ),
-                      trailing: node.children.isNotEmpty
-                          ? const Icon(
-                              Icons.arrow_forward_ios,
-                              size: 28, // Flecha más grande
-                              color: Colors.teal, // Color teal para consistencia
-                            )
-                          : null, // Sin flecha si no tiene hijos
-                    );
-                  },
+                          subtitle: Text(
+                            'Nivel: ${node.data!['nivel_taxonomico']}',
+                            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                          ),
+                          trailing: node.children.isNotEmpty
+                              ? const Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 28,
+                                  color: Colors.teal,
+                                )
+                              : null,
+                        );
+                      },
+                    ),
+                  ),
                 ),
     );
   }
