@@ -68,6 +68,34 @@ class TaxonFormState extends State<TaxonForm> {
                   icon: Icons.category,
                 ),
                 const SizedBox(height: 16),
+                FormBuilderDropdown<String>(
+                  name: 'tipo_nodo',
+                  decoration: InputDecoration(
+                    labelText: 'Tipo de nodo',
+                    prefixIcon: const Icon(Icons.type_specimen, color: Colors.teal),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.teal.shade200),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Colors.teal, width: 2),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                  ),
+                  initialValue: 'taxon', // Valor por defecto
+                  items: [
+                    DropdownMenuItem(value: 'taxon', child: Text('Taxón')),
+                    DropdownMenuItem(value: 'especie', child: Text('Especie')),
+                  ],
+                ),
+                const SizedBox(height: 16),
                 FormBuilderTypeAhead<String>(
                   name: 'parentId',
                   decoration: InputDecoration(
@@ -206,6 +234,7 @@ class TaxonFormState extends State<TaxonForm> {
         'nivel_taxonomico': formData['nivel_taxonomico'],
         'nombre_cientifico': formData['nombre_cientifico'],
         'padre_id': formData['parentId'],
+        'tipo_nodo': formData['tipo_nodo'], // Guardar el valor seleccionado del dropdown
         'createdAt': FieldValue.serverTimestamp(),
       });
       if (mounted) {
@@ -215,7 +244,6 @@ class TaxonFormState extends State<TaxonForm> {
             backgroundColor: Colors.teal,
           ),
         );
-        // Limpiar todos los campos manualmente
         _formKey.currentState!.fields.forEach((key, field) {
           field.didChange('');
         });

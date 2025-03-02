@@ -1,49 +1,100 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
-class ViewTaxScreen extends StatelessWidget {
-  const ViewTaxScreen({super.key});
+class ViewTaxScreen extends StatefulWidget {
+  final Map<String, dynamic> taxonData;
+
+  const ViewTaxScreen({super.key, required this.taxonData});
+
+  @override
+  State<ViewTaxScreen> createState() => _ViewTaxScreenState();
+}
+
+class _ViewTaxScreenState extends State<ViewTaxScreen> {
+  final Logger _logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 2,
+      errorMethodCount: 8,
+      lineLength: 120,
+      colors: true,
+      printEmojis: true,
+      dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
+    ),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _logger.d('Datos del taxón en ViewTaxScreen: ${widget.taxonData}');
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Formatear createdAt si existe y es un DateTime
+    String formattedCreatedAt = 'No disponible';
+    if (widget.taxonData['createdAt'] != null && widget.taxonData['createdAt'] is DateTime) {
+      formattedCreatedAt = widget.taxonData['createdAt'].toString();
+    }
+
+    // Traducir 'tipo_nodo' a español
+    String tipoNododisplay = 'No disponible';
+    if (widget.taxonData['tipo_nodo'] != null) {
+      tipoNododisplay = widget.taxonData['tipo_nodo'] == 'taxon' ? 'Taxón' : 'Especie';
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ver Taxones'),
+        title: Text(widget.taxonData['nombre_cientifico'] ?? 'Taxón'),
+        backgroundColor: Colors.teal,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      body: FutureBuilder<QuerySnapshot>(
-        future: FirebaseFirestore.instance.collection('taxones').get(), // Consulta a la colección 'taxones'
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator()); // Muestra un cargando mientras se obtienen los datos
-          }
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (widget.taxonData['nombre_cientifico'] != null)
+                _buildField('Nombre Científico', widget.taxonData['nombre_cientifico'].toString()),
+              _buildField('Nivel Taxonómico', widget.taxonData['nivel_taxonomico']),
+              _buildField('Tipo nodo', tipoNododisplay), // Mostrar "Taxón" o "Especie"
+              _buildField('ID Padre', widget.taxonData['padre_id']),
+              _buildField('Fecha de Creación', formattedCreatedAt),
+              if (widget.taxonData['descripcion'] != null)
+                _buildField('Descripción', widget.taxonData['descripcion'].toString()),
+              if (widget.taxonData['localizacion_gps'] != null)
+                _buildField('Ubicación GPS', widget.taxonData['localizacion_gps'].toString()),
+              if (widget.taxonData['descrito_por'] != null)
+                _buildField('Descrito Por', widget.taxonData['descrito_por']),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-          if (snapshot.hasError) {
-            return Center(child: Text('Error al cargar los datos'));
-          }
-
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('No hay taxones disponibles')); // Mensaje si no hay datos
-          }
-
-          // Si hay datos, mostramos una lista de taxones
-          final taxones = snapshot.data!.docs;
-          return ListView.builder(
-            itemCount: taxones.length,
-            itemBuilder: (context, index) {
-              var taxon = taxones[index];
-              return ListTile(
-                title: Text(taxon['nombre_cientifico'] ?? 'Sin nombre científico'), // Muestra el nombre científico del taxon
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(taxon['descripcion'] ?? 'Sin descripción'), // Muestra la descripción (si existe)
-                    Text(taxon['nivel_taxonomico'] ?? 'Sin nivel taxonómico'), // Muestra el nivel taxonómico (si existe)
-                  ],
-                ),
-              );
-            },
-          );
-        },
+  Widget _buildField(String label, dynamic value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.black87,
+          ),
+          children: [
+            TextSpan(
+              text: '$label: ',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            TextSpan(
+              text: value?.toString() ?? 'No disponible',
+            ),
+          ],
+        ),
       ),
     );
   }

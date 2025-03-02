@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:logger/logger.dart';
+import 'view_tax_screen.dart';
 
 class TreeScreen extends StatefulWidget {
   const TreeScreen({super.key});
@@ -55,20 +56,22 @@ class TreeScreenState extends State<TreeScreen> {
       for (var doc in snapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;
         final id = doc.id;
-        _logger.d('Procesando documento con ID: $id, datos: $data');
+        _logger.d('Procesando documento con ID: $id, datos: $data, descripción: ${data['descripcion']}');
         if (data.isNotEmpty && data.containsKey('nombre_cientifico')) {
-          final tipo = data['tipo'] ?? 'folder';
+          final tipoNodo = data['tipo_nodo'] ?? 'taxon';
           final node = TreeNode<Map<String, dynamic>>(data: {
             'id': id,
             'nombre_cientifico': data['nombre_cientifico'] ?? 'Sin nombre',
-            'nivel_taxonomico': data['nivel_taxonomico'] ?? 'folder',
+            'nivel_taxonomico': data['nivel_taxonomico'] ?? 'Sin nivel',
             'padre_id': data['padre_id'],
-            'tipo': tipo,
+            'tipo_nodo': tipoNodo,
             'createdAt': data['createdAt'] != null
                 ? (data['createdAt'] as Timestamp).toDate()
                 : DateTime.now(),
+            'descripcion': data['descripcion'] ?? 'No disponible',
           });
           _nodeMap[id] = node;
+          _logger.d('Nodo creado con datos: ${node.data}');
         } else {
           _logger.w('Documento con ID $id está vacío o no tiene nombre_cientifico, omitido');
         }
@@ -102,7 +105,7 @@ class TreeScreenState extends State<TreeScreen> {
     _logger.d('Construyendo UI, nodos en _nodeMap: ${_nodeMap.length}, isLoading: $_isLoading');
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Explorador de Archivos'),
+        title: const Text('Árbol taxonómico'),
         backgroundColor: Colors.teal,
       ),
       body: _isLoading
@@ -127,21 +130,48 @@ class TreeScreenState extends State<TreeScreen> {
                     _logger.d('Renderizando nodo: ${node.data!['nombre_cientifico']}, hijos: ${node.children.length}');
                     return ListTile(
                       leading: _getIcon(node),
-                      title: Text(
-                        node.data!['nombre_cientifico'] as String,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
+                      title: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              node.data!['nombre_cientifico'] as String,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.visibility,
+                              size: 20,
+                              color: Colors.teal,
+                            ),
+                            onPressed: () {
+                              _logger.i('Nodo seleccionado: ${node.data!['nombre_cientifico']}');
+                              final taxonData = node.data ?? {};
+                              _logger.d('Datos del taxón seleccionado antes de navegar: $taxonData');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ViewTaxScreen(taxonData: taxonData),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                       subtitle: Text(
                         'Nivel: ${node.data!['nivel_taxonomico']}',
                         style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       ),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-                      onTap: () {
-                        _logger.i('Nodo seleccionado: ${node.data!['nombre_cientifico']}');
-                      },
+                      trailing: node.children.isNotEmpty
+                          ? const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 28, // Flecha más grande
+                              color: Colors.teal, // Color teal para consistencia
+                            )
+                          : null, // Sin flecha si no tiene hijos
                     );
                   },
                 ),
@@ -149,13 +179,13 @@ class TreeScreenState extends State<TreeScreen> {
   }
 
   Widget _getIcon(TreeNode<Map<String, dynamic>> node) {
-    final tipo = node.data!['tipo'] as String;
-    if (tipo == 'folder') {
-      return const Icon(Icons.folder, color: Colors.blueGrey);
-    } else if (tipo == 'file' && (node.data!['nombre_cientifico'] as String).endsWith('.mp4')) {
-      return const Icon(Icons.videocam, color: Colors.blueGrey);
+    final tipoNodo = node.data!['tipo_nodo'] as String;
+    if (tipoNodo == 'taxon') {
+      return const Icon(Icons.folder, color: Colors.teal);
+    } else if (tipoNodo == 'species') {
+      return const Icon(Icons.local_florist, color: Colors.teal);
     }
-    return const Icon(Icons.insert_drive_file, color: Colors.blueGrey);
+    return const Icon(Icons.help_outline, color: Colors.grey);
   }
 
   TreeNode<Map<String, dynamic>> _findRootNode() {

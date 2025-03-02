@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
 import '../screens/loged_screen.dart';
 
@@ -11,64 +10,29 @@ class LoginScreen extends StatefulWidget {
 }
 
 class LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
-
-  String _errorMessage = '';
   bool _isLoading = false;
-  bool _rememberMe = false;
+  String _errorMessage = '';
 
-  @override
-  void initState() {
-    super.initState();
-    _loadUserCredentials();
-  }
-
-  Future<void> _loadUserCredentials() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _emailController.text = prefs.getString('email') ?? '';
-      _passwordController.text = prefs.getString('password') ?? '';
-      _rememberMe = prefs.getBool('rememberMe') ?? false;
-    });
-  }
-
-  Future<void> _signIn() async {
+  Future<void> _signInWithGoogle() async {
     setState(() {
       _isLoading = true;
       _errorMessage = '';
     });
 
     try {
-      var email = _emailController.text;
-      var password = _passwordController.text;
-      var user = await _authService.signInWithEmailPassword(email, password);
+      final user = await _authService.signInWithGoogle();
 
       if (!mounted) return;
 
       if (user != null) {
-        if (_rememberMe) {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('email', email);
-          await prefs.setString('password', password);
-          await prefs.setBool('rememberMe', _rememberMe);
-        } else {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.remove('email');
-          await prefs.remove('password');
-          await prefs.remove('rememberMe');
-        }
-
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => LogedScreen()),
-          );
-        }
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LogedScreen()),
+        );
       } else {
         setState(() {
-          _errorMessage = 'Invalid email or password';
+          _errorMessage = 'Failed to sign in with Google';
         });
       }
     } catch (e) {
@@ -88,51 +52,84 @@ class LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Iniciar sesión'),
+        title: const Text(
+          'Iniciar sesión',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.teal, // Color teal como en TaxonForm
+        elevation: 4, // Sombra como en TaxonForm
+        centerTitle: true, // Centrado como en tu versión anterior
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            Row(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal.shade50, Colors.white], // Gradiente igual a TaxonForm
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0), // Padding igual a TaxonForm
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Checkbox(
-                  value: _rememberMe,
-                  onChanged: (value) {
-                    setState(() {
-                      _rememberMe = value!;
-                    });
-                  },
+                const Text(
+                  'Bienvenido',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.teal, // Color teal para coherencia
+                  ),
                 ),
-                Text('Recuerdame'),
+                const SizedBox(height: 40), // Espacio similar a TaxonForm
+                if (_isLoading)
+                  const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.teal), // Color teal
+                  )
+                else
+                  ElevatedButton.icon(
+                    onPressed: _signInWithGoogle,
+                    icon: Image.asset(
+                      'assets/google_logo.png',
+                      height: 24,
+                      width: 24,
+                    ),
+                    label: const Text(
+                      'Acceder con Google',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white, // Texto blanco como en TaxonForm
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal, // Fondo teal como en TaxonForm
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 15,
+                      ), // Padding similar
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12), // Bordes redondeados como en TaxonForm
+                      ),
+                      elevation: 5, // Elevación igual a TaxonForm
+                      shadowColor: Colors.teal.withAlpha(128), // Sombra teal como en TaxonForm
+                    ),
+                  ),
+                if (_errorMessage.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Text(
+                      _errorMessage,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
               ],
             ),
-            SizedBox(height: 20),
-            if (_isLoading)
-              CircularProgressIndicator()
-            else
-              ElevatedButton(
-                onPressed: _signIn,
-                child: Text('Iniciar sesión'),
-              ),
-            if (_errorMessage.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: Text(
-                  _errorMessage,
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-          ],
+          ),
         ),
       ),
     );

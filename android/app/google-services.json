@@ -12,7 +12,20 @@
           "package_name": "com.example.catataxo"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "61379813134-fudafj06u8bvntlrjvainne106nsqp5u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.catataxo",
+            "certificate_hash": "3c81777f9af2c297d81b0f5cfcf842d80d6c14e5"
+          }
+        },
+        {
+          "client_id": "61379813134-3qebbfetrl8ist2tpip8u25f0n01dvhj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD09ZcXq5oMlzdDZUosr0Zvkc-Y9UZDXDo"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "61379813134-3qebbfetrl8ist2tpip8u25f0n01dvhj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "61379813134-gbe8aomq47scd1o9qic81k0htndi8hp2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.catataxo"
+              }
+            }
+          ]
         }
       }
     }
