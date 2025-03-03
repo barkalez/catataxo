@@ -1,3 +1,4 @@
+import 'package:catataxo/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'new_tax_screen.dart'; // Asegúrate de que este sea el archivo correcto para TaxonForm
@@ -31,18 +32,7 @@ class _LogedScreenState extends State<LogedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Catataxo',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Colors.teal,
-        elevation: 4,
-        centerTitle: true,
-      ),
+      appBar: const CustomAppBar(title: 'Catataxo'),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
