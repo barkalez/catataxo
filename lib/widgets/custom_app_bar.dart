@@ -3,8 +3,13 @@ import '../constants/app_styles.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final Widget? leading; // Hacer leading opcional
 
-  const CustomAppBar({super.key, required this.title});
+  const CustomAppBar({
+    super.key,
+    required this.title,
+    this.leading,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +27,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         decoration: const BoxDecoration(gradient: AppStyles.appBarGradient),
       ),
       elevation: 4,
+      leading: leading, // Usar el leading si se proporciona
     );
   }
 
